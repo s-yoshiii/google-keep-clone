@@ -1,7 +1,26 @@
 import { Link } from 'react-router-dom';
 import './Signup.css';
+import { useState } from 'react';
+import { authRepository } from '../../modules/auth/auth.repository';
 
 export default function Signup() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const signup = async() => {
+    try {
+      const result = await authRepository.signup(name,email,password);
+      console.log(result)
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'response' in e) {
+        const axiosErr = e as { response: { status: number; data: unknown } };
+        console.error('status:', axiosErr.response.status);
+        console.error('data:', axiosErr.response.data);
+      } else {
+        console.error(e);
+      }
+    }
+  }
   return (
     <div className='signup-page'>
       <div className='signup-container'>
@@ -30,8 +49,10 @@ export default function Signup() {
                 type='text'
                 className='form-input'
                 placeholder='山田太郎'
-                value=''
-                onChange={() => {}}
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value)
+                }}
               />
             </div>
 
@@ -44,8 +65,10 @@ export default function Signup() {
                 type='email'
                 className='form-input'
                 placeholder='example@example.com'
-                value=''
-                onChange={() => {}}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                }}
               />
             </div>
 
@@ -58,15 +81,17 @@ export default function Signup() {
                 type='password'
                 className='form-input'
                 placeholder='8文字以上'
-                value=''
-                onChange={() => {}}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                }}
               />
             </div>
 
             <button
               type='button'
               className='btn btn-primary signup-submit-btn'
-              onClick={() => {}}
+              onClick={signup}
             >
               アカウント作成
             </button>
