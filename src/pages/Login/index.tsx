@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import './Login.css';
+import { useState } from 'react';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <div className='login-page'>
       <div className='login-container'>
@@ -30,8 +33,8 @@ export default function Login() {
                 type='email'
                 className='form-input'
                 placeholder='example@example.com'
-                value=''
-                onChange={() => {}}
+                value={email}
+                onChange={(e) => {setEmail(e.target.value)}}
               />
             </div>
 
@@ -44,8 +47,8 @@ export default function Login() {
                 type='password'
                 className='form-input'
                 placeholder='パスワードを入力'
-                value=''
-                onChange={() => {}}
+                value={password}
+                onChange={(e) => {setPassword(e.target.value)}}
               />
             </div>
 
