@@ -30,3 +30,6 @@ dist-ssr
 # claude
 .claude/
 .serena/
+
+##doc
+notes/

@@ -1,10 +1,31 @@
 import { Link } from 'react-router-dom';
 import './Login.css';
 import { useState } from 'react';
+import { userUIStore } from '../../modules/ui/ui.store';
+import { authRepository } from '../../modules/auth/auth.repository';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { addFlashMessage } = userUIStore();
+  const login = async () => {
+    if(!email || !password) {
+      addFlashMessage('メールアドレスとパスワードを入力してください。', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const result = await authRepository.signin(email,password);
+      console.log(result);
+      addFlashMessage('ログインしました。','success');
+    } catch(error) {
+      console.log(error);
+      addFlashMessage('ログインに失敗しました', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <div className='login-page'>
       <div className='login-container'>
@@ -55,7 +76,8 @@ export default function Login() {
             <button
               type='button'
               className='btn btn-primary login-submit-btn'
-              onClick={() => {}}
+              onClick={login}
+              disabled={isLoading}
             >
               ログイン
             </button>
