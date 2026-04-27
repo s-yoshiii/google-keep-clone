@@ -3,8 +3,12 @@ import SearchBar from './SearchBar';
 import LabelSidebar from './LabelSidebar';
 import NoteCard from './NoteCard';
 import './Home.css';
+import { Navigate } from 'react-router-dom';
+import { useCurrentUserStore } from '../../modules/auth/current-user.store';
 
 export default function Home() {
+  const {currentUser} = useCurrentUserStore();
+  if(!currentUser) return <Navigate to="/login" />
   return (
     <div className='home'>
       <header className='home-header'>

@@ -1,14 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import './Login.css';
 import { useState } from 'react';
 import { userUIStore } from '../../modules/ui/ui.store';
 import { authRepository } from '../../modules/auth/auth.repository';
+import { useCurrentUserStore } from '../../modules/auth/current-user.store';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addFlashMessage } = userUIStore();
+  const {currentUser,setCurrentUser} = useCurrentUserStore();
   const login = async () => {
     if(!email || !password) {
       addFlashMessage('メールアドレスとパスワードを入力してください。', 'error');
@@ -16,8 +18,8 @@ export default function Login() {
     }
     setIsLoading(true);
     try {
-      const result = await authRepository.signin(email,password);
-      console.log(result);
+      const {user} = await authRepository.signin(email,password);
+      setCurrentUser(user);
       addFlashMessage('ログインしました。','success');
     } catch(error) {
       console.log(error);
@@ -25,7 +27,8 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+  if(currentUser) return <Navigate to="/" />
   return (
     <div className='login-page'>
       <div className='login-container'>
