@@ -18,7 +18,8 @@ export default function Login() {
     }
     setIsLoading(true);
     try {
-      const {user} = await authRepository.signin(email,password);
+      const {user, token} = await authRepository.signin(email,password);
+      localStorage.setItem('token', token);
       setCurrentUser(user);
       addFlashMessage('ログインしました。','success');
     } catch(error) {

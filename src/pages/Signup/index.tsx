@@ -23,8 +23,9 @@ export default function Signup() {
     }
     setIsLoading(true);
     try {
-      const {user} = await authRepository.signup(name,email,password);
+      const {user, token} = await authRepository.signup(name,email,password);
       setCurrentUser(user);
+      localStorage.setItem('token',token);
       addFlashMessage('アカウントを作成しました', 'success');
     } catch (e: unknown) {
       addFlashMessage('アカウント作成に失敗しました。', 'error');
