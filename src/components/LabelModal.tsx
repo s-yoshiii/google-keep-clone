@@ -10,15 +10,20 @@ const LABEL_COLORS = [
   { name: '灰', value: '#9e9e9e' },
 ];
 
-export default function LabelModal() {
+interface LabelModalProps {
+  onClose: () => void;
+  onCreate: (name: string, color: string) => void;
+}
+
+export default function LabelModal({ onClose, onCreate }: LabelModalProps) {
   return (
-    <div className='label-modal-overlay' onClick={() => {}}>
+    <div className='label-modal-overlay' onClick={onClose}>
       <div className='label-modal' onClick={(e) => e.stopPropagation()}>
         <div className='label-modal__header'>
           <h2 className='label-modal__title'>新しいラベル</h2>
           <button
             className='icon-btn label-modal__close-btn'
-            onClick={() => {}}
+            onClick={onClose}
           >
             <FiX />
           </button>
@@ -58,12 +63,12 @@ export default function LabelModal() {
         </div>
 
         <div className='label-modal__footer'>
-          <button className='btn btn-secondary' onClick={() => {}}>
+          <button className='btn btn-secondary' onClick={onClose}>
             キャンセル
           </button>
           <button
             className='btn btn-primary'
-            onClick={() => {}}
+            onClick={() => onCreate('', '')}
             disabled={true}
           >
             作成

@@ -1,9 +1,25 @@
 import { FiTag, FiPlus, FiX } from 'react-icons/fi';
 import LabelModal from '../../components/LabelModal';
 import { useState } from 'react';
+import { userUIStore } from '../../modules/ui/ui.store';
+import { labelRepository } from '../../modules/labels/label.repository';
+import { useLabelStore } from '../../modules/labels/label.store';
 
 export default function LabelSidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addFlashMessage } = userUIStore();
+  const { addLabel } = useLabelStore();
+  const createLabel = async (name: string, color: string) => {
+    try {
+      const newLabel = await labelRepository.createLabel(name, color);
+      addLabel(newLabel);
+      addFlashMessage('ラベルを作成しました', 'success');
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('ラベル作成に失敗しました', 'error');
+    }
+  };
   return (
     <>
       <aside className="label-sidebar">
@@ -74,7 +90,12 @@ export default function LabelSidebar() {
         </ul>
       </aside>
 
-      {isModalOpen && <LabelModal />}
+      {isModalOpen && (
+        <LabelModal
+          onClose={() => setIsModalOpen(false)}
+          onCreate={createLabel}
+        />
+      )}
     </>
   );
 }
