@@ -93,7 +93,7 @@ export default function LabelSidebar() {
       {isModalOpen && (
         <LabelModal
           onClose={() => setIsModalOpen(false)}
-          onCreate={createLabel}
+          onSave={createLabel}
         />
       )}
     </>
