@@ -1,6 +1,6 @@
 import { FiTag, FiPlus, FiX } from 'react-icons/fi';
 import LabelModal from '../../components/LabelModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { userUIStore } from '../../modules/ui/ui.store';
 import { labelRepository } from '../../modules/labels/label.repository';
 import { useLabelStore } from '../../modules/labels/label.store';
@@ -8,7 +8,19 @@ import { useLabelStore } from '../../modules/labels/label.store';
 export default function LabelSidebar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
-  const { addLabel } = useLabelStore();
+  const { addLabel, setLabels, labels, removeLabel } = useLabelStore();
+  const fetchLabels = async () => {
+    try {
+      const labels = await labelRepository.getLabels();
+      setLabels(labels);
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('ラベル取得に失敗しました', 'error');
+    }
+  };
+  useEffect(() => {
+    fetchLabels();
+  }, []);
   const createLabel = async (name: string, color: string) => {
     try {
       const newLabel = await labelRepository.createLabel(name, color);
@@ -18,6 +30,16 @@ export default function LabelSidebar() {
     } catch (error) {
       console.error(error);
       addFlashMessage('ラベル作成に失敗しました', 'error');
+    }
+  };
+  const deleteLabel = async (id: string) => {
+    try {
+      await labelRepository.deleteLabel(id);
+      removeLabel(id);
+      addFlashMessage('ラベルを削除しました', 'success');
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('ラベル削除に失敗しました', 'error');
     }
   };
   return (
@@ -39,54 +61,23 @@ export default function LabelSidebar() {
         </div>
 
         <ul className="label-sidebar__list">
-          <li className="label-sidebar__item">
-            <div className="label-sidebar__label-btn">
-              <span
-                className="label-sidebar__label-color"
-                style={{ backgroundColor: '#2196f3' }}
-              ></span>
-              <span className="label-sidebar__label-name">仕事</span>
-            </div>
-            <button className="label-sidebar__delete-btn" onClick={() => {}}>
-              <FiX />
-            </button>
-          </li>
-          <li className="label-sidebar__item">
-            <div className="label-sidebar__label-btn">
-              <span
-                className="label-sidebar__label-color"
-                style={{ backgroundColor: '#4caf50' }}
-              ></span>
-              <span className="label-sidebar__label-name">重要</span>
-            </div>
-            <button className="label-sidebar__delete-btn" onClick={() => {}}>
-              <FiX />
-            </button>
-          </li>
-          <li className="label-sidebar__item">
-            <div className="label-sidebar__label-btn">
-              <span
-                className="label-sidebar__label-color"
-                style={{ backgroundColor: '#f44336' }}
-              ></span>
-              <span className="label-sidebar__label-name">緊急</span>
-            </div>
-            <button className="label-sidebar__delete-btn" onClick={() => {}}>
-              <FiX />
-            </button>
-          </li>
-          <li className="label-sidebar__item">
-            <div className="label-sidebar__label-btn">
-              <span
-                className="label-sidebar__label-color"
-                style={{ backgroundColor: '#ffc107' }}
-              ></span>
-              <span className="label-sidebar__label-name">個人</span>
-            </div>
-            <button className="label-sidebar__delete-btn" onClick={() => {}}>
-              <FiX />
-            </button>
-          </li>
+          {labels.map((label) => (
+            <li className="label-sidebar__item" key={label.id}>
+              <div className="label-sidebar__label-btn">
+                <span
+                  className="label-sidebar__label-color"
+                  style={{ backgroundColor: label.color }}
+                ></span>
+                <span className="label-sidebar__label-name">{label.name}</span>
+              </div>
+              <button
+                className="label-sidebar__delete-btn"
+                onClick={() => deleteLabel(label.id)}
+              >
+                <FiX />
+              </button>
+            </li>
+          ))}
         </ul>
       </aside>
 
