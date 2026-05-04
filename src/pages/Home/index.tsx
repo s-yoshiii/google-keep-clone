@@ -5,30 +5,55 @@ import NoteCard from './NoteCard';
 import './Home.css';
 import { Navigate } from 'react-router-dom';
 import { useCurrentUserStore } from '../../modules/auth/current-user.store';
+import NoteModal from './NoteModal';
+import { useState } from 'react';
+import { userUIStore } from '../../modules/ui/ui.store';
+import { useNoteStore } from '../../modules/notes/note.store';
+import {
+  noteRepository,
+  type SaveNoteParams,
+} from '../../modules/notes/note.repository';
 
 export default function Home() {
-  const {currentUser} = useCurrentUserStore();
-  if(!currentUser) return <Navigate to="/login" />
+  const { currentUser } = useCurrentUserStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addFlashMessage } = userUIStore();
+  const { addNote } = useNoteStore();
+  const createNote = async (params: SaveNoteParams) => {
+    try {
+      const newNote = await noteRepository.createNote(params);
+      addNote(newNote);
+      addFlashMessage('メモを作成しました', 'success');
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('メモの作成に失敗しました', 'error');
+    }
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  if (!currentUser) return <Navigate to="/login" />;
   return (
-    <div className='home'>
-      <header className='home-header'>
-        <div className='home-header__left'>
-          <div className='home-header__logo'>
+    <div className="home">
+      <header className="home-header">
+        <div className="home-header__left">
+          <div className="home-header__logo">
             <svg
-              className='home-header__logo-icon'
-              viewBox='0 0 24 24'
-              fill='currentColor'
+              className="home-header__logo-icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
             >
-              <path d='M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z' />
+              <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" />
             </svg>
-            <span className='home-header__logo-text'>Google Keep Clone</span>
+            <span className="home-header__logo-text">Google Keep Clone</span>
           </div>
           <SearchBar />
         </div>
-        <div className='home-header__right'>
-          <span className='home-header__user'>テストユーザー</span>
+        <div className="home-header__right">
+          <span className="home-header__user">テストユーザー</span>
           <button
-            className='icon-btn home-header__logout-btn'
+            className="icon-btn home-header__logout-btn"
             onClick={() => {}}
           >
             <FiLogOut />
@@ -36,15 +61,17 @@ export default function Home() {
         </div>
       </header>
 
-      <div className='home-main'>
+      <div className="home-main">
         <LabelSidebar />
 
-        <main className='home-content'>
-          <div className='home-content__header'>
-            <h2 className='home-content__title'>すべてのメモ</h2>
+        <main className="home-content">
+          <div className="home-content__header">
+            <h2 className="home-content__title">すべてのメモ</h2>
             <button
-              className='btn btn-primary home-content__add-btn'
-              onClick={() => {}}
+              className="btn btn-primary home-content__add-btn"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
             >
               <FiPlus />
               <span>新しいメモ</span>
@@ -52,7 +79,7 @@ export default function Home() {
           </div>
 
           {/* メモ一覧 - NoteCardコンポーネントを使用 */}
-          <div className='notes-grid'>
+          <div className="notes-grid">
             <NoteCard />
             <NoteCard />
             <NoteCard />
@@ -73,6 +100,9 @@ export default function Home() {
           </div> */}
         </main>
       </div>
+      {isModalOpen && (
+        <NoteModal onClose={closeModal} onSave={createNote} />
+      )}
     </div>
   );
 }

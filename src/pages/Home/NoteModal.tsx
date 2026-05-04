@@ -1,12 +1,18 @@
 import { FiX, FiImage, FiTag } from 'react-icons/fi';
+import type { SaveNoteParams } from '../../modules/notes/note.repository';
 
-export default function NoteModal() {
+interface NoteModalProps {
+  onClose: () => void;
+  onSave: (params: SaveNoteParams) => void;
+}
+
+export default function NoteModal({ onClose, onSave }: NoteModalProps) {
   return (
-    <div className='note-modal-overlay' onClick={() => {}}>
+    <div className='note-modal-overlay' onClick={onClose}>
       <div className='note-modal' onClick={(e) => e.stopPropagation()}>
         <div className='note-modal__header'>
           <h2 className='note-modal__title'>メモを入力</h2>
-          <button className='icon-btn note-modal__close-btn' onClick={() => {}}>
+          <button className='icon-btn note-modal__close-btn' onClick={onClose}>
             <FiX />
           </button>
         </div>
@@ -123,15 +129,12 @@ export default function NoteModal() {
         </div>
 
         <div className='note-modal__footer'>
-          <button
-            className='btn btn-secondary'
-            onClick={() => {}}
-          >
+          <button className='btn btn-secondary' onClick={onClose}>
             キャンセル
           </button>
           <button
             className='btn btn-primary'
-            onClick={() => {}}
+            onClick={() => onSave({ labelIds: [] })}
           >
             保存
           </button>
