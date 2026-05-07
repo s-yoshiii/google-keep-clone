@@ -6,6 +6,15 @@ export interface SaveNoteParams {
   labelIds: string[];
   imageFile?: File;
 }
+export interface NotesResponse {
+  notes: Note[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 export const noteRepository = {
   async createNote(params: SaveNoteParams): Promise<Note> {
@@ -21,5 +30,12 @@ export const noteRepository = {
       },
     });
     return new Note(result.data);
+  },
+  async getNote(): Promise<NotesResponse> {
+    const result = await api.get('/notes');
+    return {
+      notes: result.data.notes.map((note: Note) => new Note(note)),
+      pagination: result.data.pagination,
+    };
   },
 };
