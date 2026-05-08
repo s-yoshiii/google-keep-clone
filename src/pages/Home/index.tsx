@@ -6,7 +6,7 @@ import './Home.css';
 import { Navigate } from 'react-router-dom';
 import { useCurrentUserStore } from '../../modules/auth/current-user.store';
 import NoteModal from './NoteModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { userUIStore } from '../../modules/ui/ui.store';
 import { useNoteStore } from '../../modules/notes/note.store';
 import {
@@ -18,7 +18,23 @@ export default function Home() {
   const { currentUser } = useCurrentUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
-  const { addNote } = useNoteStore();
+  const { addNote, notes, setNotes, isLoading, setIsLoading } = useNoteStore();
+  const fetchNotes = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const response = await noteRepository.getNotes();
+      setNotes(response.notes);
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('メモの取得に失敗しました。', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchNotes();
+  }, []);
   const createNote = async (params: SaveNoteParams) => {
     try {
       const newNote = await noteRepository.createNote(params);
@@ -80,10 +96,9 @@ export default function Home() {
 
           {/* メモ一覧 - NoteCardコンポーネントを使用 */}
           <div className="notes-grid">
-            <NoteCard />
-            <NoteCard />
-            <NoteCard />
-            <NoteCard />
+            {notes.map((note) => (
+              <NoteCard key={note.id} note={note} />
+            ))}
           </div>
 
           {/* <div className='loading' style={{ textAlign: 'center', padding: '20px' }}>

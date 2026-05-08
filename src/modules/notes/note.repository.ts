@@ -31,7 +31,7 @@ export const noteRepository = {
     });
     return new Note(result.data);
   },
-  async getNote(): Promise<NotesResponse> {
+  async getNotes(): Promise<NotesResponse> {
     const result = await api.get('/notes');
     return {
       notes: result.data.notes.map((note: Note) => new Note(note)),

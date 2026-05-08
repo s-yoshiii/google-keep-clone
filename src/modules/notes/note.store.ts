@@ -7,6 +7,7 @@ interface NoteStore {
   addNote: (note: Note) => void;
   setNotes: (notes: Note[]) => void;
   setIsLoading: (isLoading: boolean) => void;
+  removeLabelFromNotes: (labelId: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -20,5 +21,13 @@ export const useNoteStore = create<NoteStore>((set) => ({
   },
   setIsLoading: (isLoading: boolean) => {
     set({ isLoading });
+  },
+  removeLabelFromNotes: (labelId: string) => {
+    set((state) => ({
+      notes: state.notes.map((note) => ({
+        ...note,
+        labels: note.labels?.filter((label) => label.id !== labelId || []),
+      })),
+    }));
   },
 }));
