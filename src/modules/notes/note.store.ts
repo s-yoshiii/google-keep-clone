@@ -26,7 +26,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set((state) => ({
       notes: state.notes.map((note) => ({
         ...note,
-        labels: note.labels?.filter((label) => label.id !== labelId || []),
+        labels: note.labels?.filter((label) => label.id !== labelId) || [],
       })),
     }));
   },
