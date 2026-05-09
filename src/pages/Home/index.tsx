@@ -13,12 +13,14 @@ import {
   noteRepository,
   type SaveNoteParams,
 } from '../../modules/notes/note.repository';
+import type { Note } from '../../modules/notes/note.entity';
 
 export default function Home() {
   const { currentUser } = useCurrentUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
   const { addNote, notes, setNotes, isLoading, setIsLoading } = useNoteStore();
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
   const fetchNotes = async () => {
     if (isLoading) return;
     setIsLoading(true);
@@ -47,7 +49,12 @@ export default function Home() {
     }
   };
   const closeModal = () => {
+    setEditingNote(null);
     setIsModalOpen(false);
+  };
+  const handleCardClick = (note: Note) => {
+    setEditingNote(note);
+    setIsModalOpen(true);
   };
   if (!currentUser) return <Navigate to="/login" />;
   return (
@@ -97,7 +104,7 @@ export default function Home() {
           {/* メモ一覧 - NoteCardコンポーネントを使用 */}
           <div className="notes-grid">
             {notes.map((note) => (
-              <NoteCard key={note.id} note={note} />
+              <NoteCard key={note.id} note={note} onEdit={handleCardClick} />
             ))}
           </div>
 
@@ -115,7 +122,7 @@ export default function Home() {
           </div> */}
         </main>
       </div>
-      {isModalOpen && <NoteModal onClose={closeModal} onSubmit={createNote} />}
+      {isModalOpen && <NoteModal onClose={closeModal} onSubmit={createNote} initialNote={editingNote ?? undefined} />}
     </div>
   );
 }

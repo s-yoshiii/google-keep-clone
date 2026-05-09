@@ -38,4 +38,18 @@ export const noteRepository = {
       pagination: result.data.pagination,
     };
   },
+  async updateNote(id: string, params: SaveNoteParams): Promise<Note> {
+    const formData = new FormData();
+    if (params.title) formData.append('title', params.title);
+    if (params.content) formData.append('content', params.content);
+    if (params.labelIds && params.labelIds.length > 0)
+      formData.append('labelIds', JSON.stringify(params.labelIds));
+    if (params.imageFile) formData.append('image', params.imageFile);
+    const result = await api.put(`/notes/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return new Note(result.data);
+  },
 };

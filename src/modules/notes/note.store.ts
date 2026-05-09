@@ -8,6 +8,7 @@ interface NoteStore {
   setNotes: (notes: Note[]) => void;
   setIsLoading: (isLoading: boolean) => void;
   removeLabelFromNotes: (labelId: string) => void;
+  replaceNote: (id: string, newValue: Note) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -28,6 +29,11 @@ export const useNoteStore = create<NoteStore>((set) => ({
         ...note,
         labels: note.labels?.filter((label) => label.id !== labelId) || [],
       })),
+    }));
+  },
+  replaceNote(id: string, newValue: Note) {
+    set((state) => ({
+      notes: state.notes.map((note) => (note.id === id ? newValue : note)),
     }));
   },
 }));

@@ -3,13 +3,15 @@ import type { SaveNoteParams } from '../../modules/notes/note.repository';
 import { useLabelStore } from '../../modules/labels/label.store';
 import { useState } from 'react';
 import { userUIStore } from '../../modules/ui/ui.store';
+import type { Note } from '../../modules/notes/note.entity';
 
 interface NoteModalProps {
   onClose: () => void;
   onSubmit: (params: SaveNoteParams) => void;
+  initialNote?: Note;
 }
 
-export default function NoteModal({ onClose, onSubmit }: NoteModalProps) {
+export default function NoteModal({ onClose, onSubmit, initialNote: _ }: NoteModalProps) {
   const { labels } = useLabelStore();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

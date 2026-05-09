@@ -2,11 +2,12 @@ import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import type { Note } from '../../modules/notes/note.entity';
 interface NoteCardProps {
   note: Note;
+  onEdit: (note: Note) => void;
 }
 
-export default function NoteCard({ note }: NoteCardProps) {
+export default function NoteCard({ note, onEdit }: NoteCardProps) {
   return (
-    <div className="note-card">
+    <div className="note-card" onClick={() => onEdit(note)}>
       {note.imageUrl && (
         <div className="note-card__image-container">
           <img
@@ -16,7 +17,7 @@ export default function NoteCard({ note }: NoteCardProps) {
           />
         </div>
       )}
-      <h3 className="note-card__title">{note.title}</h3>
+      <h3 className="note-card__title">{note.title || '無題のメモ'}</h3>
       <p className="note-card__content">{note.content}</p>
       <div className="note-card__labels">
         {note.labels.map((label) => (
@@ -34,7 +35,7 @@ export default function NoteCard({ note }: NoteCardProps) {
           {note.createdAt.toLocaleString()}
         </span>
         <div className="note-card__actions">
-          <button className="icon-btn note-card__action-btn">
+          <button className="icon-btn note-card__action-btn" onClick={() => {}}>
             <FiEdit2 />
           </button>
           <button className="icon-btn note-card__action-btn" onClick={() => {}}>
