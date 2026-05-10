@@ -8,15 +8,19 @@ import type { Note } from '../../modules/notes/note.entity';
 interface NoteModalProps {
   onClose: () => void;
   onSubmit: (params: SaveNoteParams) => void;
-  initialNote?: Note;
+  note?: Note;
 }
 
-export default function NoteModal({ onClose, onSubmit, initialNote: _ }: NoteModalProps) {
+export default function NoteModal({ onClose, onSubmit, note }: NoteModalProps) {
   const { labels } = useLabelStore();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>([]);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [title, setTitle] = useState(note?.title || '');
+  const [content, setContent] = useState(note?.content || '');
+  const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>(
+    note?.labels.map((label) => label.id) || []
+  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    note?.imageUrl || null
+  );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { addFlashMessage } = userUIStore();
   const toggleLabel = (labelId: string) => {
