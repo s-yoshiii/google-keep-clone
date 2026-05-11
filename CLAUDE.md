@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow
+
+After making any code changes, always run a full build/type check (`yarn build` or equivalent) before committing to catch errors like missing imports, unused variables, or missing build steps.
+
 ## Commands
 
 ```bash
@@ -19,6 +23,14 @@ No test runner is configured yet.
 - Package manager: **yarn** (see `yarn.lock`)
 - Strict TypeScript: `strict`, `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly` are all enabled in `tsconfig.app.json`
 - ESLint config (`eslint.config.js`) enforces `react-hooks` and `react-refresh` rules
+
+## Language & Conventions
+
+This project uses TypeScript. Always ensure type safety, check for unused imports, and run `npx tsc --noEmit` when verifying changes.
+
+## Git Workflow
+
+When committing and pushing, use descriptive commit messages in English summarizing what changed and why. Always verify the build passes before pushing.
 
 ## Project Status
 

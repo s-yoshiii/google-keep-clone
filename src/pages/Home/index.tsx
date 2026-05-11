@@ -19,8 +19,15 @@ export default function Home() {
   const { currentUser } = useCurrentUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
-  const { addNote, notes, setNotes, isLoading, setIsLoading, replaceNote } =
-    useNoteStore();
+  const {
+    addNote,
+    notes,
+    setNotes,
+    isLoading,
+    setIsLoading,
+    replaceNote,
+    removeNote,
+  } = useNoteStore();
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const fetchNotes = async () => {
     if (isLoading) return;
@@ -73,6 +80,17 @@ export default function Home() {
       addFlashMessage('メモの更新に失敗しました', 'error');
     }
   };
+  const deleteNote = async (id: string) => {
+    if (!window.confirm('このメモを削除しますか')) return;
+    try {
+      await noteRepository.deleteNote(id);
+      removeNote(id);
+      addFlashMessage('メモを削除しました。', 'success');
+    } catch (error) {
+      console.error(error);
+      addFlashMessage('メモの削除に失敗しました。', 'error');
+    }
+  };
   if (!currentUser) return <Navigate to="/login" />;
   return (
     <div className="home">
@@ -121,7 +139,12 @@ export default function Home() {
           {/* メモ一覧 - NoteCardコンポーネントを使用 */}
           <div className="notes-grid">
             {notes.map((note) => (
-              <NoteCard key={note.id} note={note} onEdit={handleCardClick} />
+              <NoteCard
+                key={note.id}
+                note={note}
+                onEdit={handleCardClick}
+                onDelete={deleteNote}
+              />
             ))}
           </div>
 
