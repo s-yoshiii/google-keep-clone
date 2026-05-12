@@ -4,17 +4,25 @@ import type { Note } from './note.entity';
 interface NoteStore {
   notes: Note[];
   isLoading: boolean;
+  page: number;
+  hasMore: boolean;
   addNote: (note: Note) => void;
   setNotes: (notes: Note[]) => void;
   setIsLoading: (isLoading: boolean) => void;
   removeLabelFromNotes: (labelId: string) => void;
   replaceNote: (id: string, newValue: Note) => void;
   removeNote: (id: string) => void;
+  addNotes: (notes: Note[]) => void;
+  resetNotes: (note: Note[]) => void;
+  setPage: (page: number) => void;
+  setHasMore: (hasMore: boolean) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
   notes: [],
   isLoading: false,
+  page: 1,
+  hasMore: true,
   addNote: (note: Note) => {
     set((state) => ({ notes: [note, ...state.notes] }));
   },
@@ -41,5 +49,17 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set((state) => ({
       notes: state.notes.filter((note) => note.id !== id),
     }));
+  },
+  addNotes: (notes: Note[]) => {
+    set((state) => ({ notes: [...state.notes, ...notes] }));
+  },
+  resetNotes: () => {
+    set({ notes: [], page: 1, hasMore: true });
+  },
+  setPage: (page: number) => {
+    set({ page });
+  },
+  setHasMore: (hasMore: boolean) => {
+    set({ hasMore });
   },
 }));
