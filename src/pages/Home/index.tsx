@@ -27,14 +27,27 @@ export default function Home() {
     setIsLoading,
     replaceNote,
     removeNote,
+    addNotes,
+    resetNotes,
+    page,
+    hasMore,
+    setPage,
+    setHasMore,
   } = useNoteStore();
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const limit = 12;
   const fetchNotes = async () => {
-    if (isLoading) return;
+    if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      const response = await noteRepository.getNotes();
-      setNotes(response.notes);
+      const response = await noteRepository.getNotes(page, limit);
+      if (page === 1) {
+        setNotes(response.notes);
+      } else {
+        addNotes(response.notes);
+      }
+      setPage(page + 1);
+      setHasMore(response.pagination.page < response.pagination.totalPages);
     } catch (error) {
       console.error(error);
       addFlashMessage('メモの取得に失敗しました。', 'error');
@@ -44,6 +57,9 @@ export default function Home() {
   };
   useEffect(() => {
     fetchNotes();
+    return () => {
+      resetNotes();
+    };
   }, []);
   const createNote = async (params: SaveNoteParams) => {
     try {

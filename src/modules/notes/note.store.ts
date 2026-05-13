@@ -13,7 +13,7 @@ interface NoteStore {
   replaceNote: (id: string, newValue: Note) => void;
   removeNote: (id: string) => void;
   addNotes: (notes: Note[]) => void;
-  resetNotes: (note: Note[]) => void;
+  resetNotes: () => void;
   setPage: (page: number) => void;
   setHasMore: (hasMore: boolean) => void;
 }
