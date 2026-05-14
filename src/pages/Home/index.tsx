@@ -6,7 +6,7 @@ import './Home.css';
 import { Navigate } from 'react-router-dom';
 import { useCurrentUserStore } from '../../modules/auth/current-user.store';
 import NoteModal from './NoteModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { userUIStore } from '../../modules/ui/ui.store';
 import { useNoteStore } from '../../modules/notes/note.store';
 import {
@@ -35,7 +35,7 @@ export default function Home() {
     setHasMore,
   } = useNoteStore();
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const limit = 12;
+  const limit = 3;
   const fetchNotes = async () => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
@@ -55,6 +55,7 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+  const leadMoreRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     fetchNotes();
     return () => {
@@ -107,6 +108,21 @@ export default function Home() {
       addFlashMessage('メモの削除に失敗しました。', 'error');
     }
   };
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !isLoading) {
+        fetchNotes();
+      }
+    });
+    if (leadMoreRef.current) {
+      observer.observe(leadMoreRef.current);
+    }
+    return () => {
+      observer.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, isLoading]);
   if (!currentUser) return <Navigate to="/login" />;
   return (
     <div className="home">
@@ -163,14 +179,23 @@ export default function Home() {
               />
             ))}
           </div>
-
-          {/* <div className='loading' style={{ textAlign: 'center', padding: '20px' }}>
-            読み込み中...
-          </div> */}
-
-          {/* <div className='no-more' style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-            全てのメモを表示しました
-          </div> */}
+          <div ref={leadMoreRef} style={{ height: '20px' }}></div>
+          {isLoading && (
+            <div
+              className="loading"
+              style={{ textAlign: 'center', padding: '20px' }}
+            >
+              読み込み中...
+            </div>
+          )}
+          {!hasMore && notes.length > 0 && (
+            <div
+              className="no-more"
+              style={{ textAlign: 'center', padding: '20px', color: '#666' }}
+            >
+              全てのメモを表示しました
+            </div>
+          )}
 
           {/* <div className='no-notes'>
             <p>メモがありません</p>
