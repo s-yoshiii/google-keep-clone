@@ -6,6 +6,7 @@ interface NoteStore {
   isLoading: boolean;
   page: number;
   hasMore: boolean;
+  searchQuery: string;
   addNote: (note: Note) => void;
   setNotes: (notes: Note[]) => void;
   setIsLoading: (isLoading: boolean) => void;
@@ -16,6 +17,7 @@ interface NoteStore {
   resetNotes: () => void;
   setPage: (page: number) => void;
   setHasMore: (hasMore: boolean) => void;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set) => ({
@@ -23,6 +25,7 @@ export const useNoteStore = create<NoteStore>((set) => ({
   isLoading: false,
   page: 1,
   hasMore: true,
+  searchQuery: '',
   addNote: (note: Note) => {
     set((state) => ({ notes: [note, ...state.notes] }));
   },
@@ -61,5 +64,8 @@ export const useNoteStore = create<NoteStore>((set) => ({
   },
   setHasMore: (hasMore: boolean) => {
     set({ hasMore });
+  },
+  setSearchQuery: (searchQuery: string) => {
+    set({ searchQuery });
   },
 }));

@@ -31,8 +31,10 @@ export default function Home() {
     resetNotes,
     page,
     hasMore,
+    searchQuery,
     setPage,
     setHasMore,
+    setSearchQuery,
   } = useNoteStore();
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const limit = 3;
@@ -56,12 +58,15 @@ export default function Home() {
     }
   };
   const leadMoreRef = useRef<HTMLDivElement | null>(null);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
   useEffect(() => {
     fetchNotes();
     return () => {
       resetNotes();
     };
-  }, []);
+  }, [searchQuery]);
   const createNote = async (params: SaveNoteParams) => {
     try {
       const newNote = await noteRepository.createNote(params);
@@ -138,7 +143,7 @@ export default function Home() {
             </svg>
             <span className="home-header__logo-text">Google Keep Clone</span>
           </div>
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
         </div>
         <div className="home-header__right">
           <span className="home-header__user">テストユーザー</span>
