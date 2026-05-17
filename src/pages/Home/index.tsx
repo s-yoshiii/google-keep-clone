@@ -17,7 +17,7 @@ import type { Note } from '../../modules/notes/note.entity';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function Home() {
-  const { currentUser } = useCurrentUserStore();
+  const { currentUser, setCurrentUser } = useCurrentUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
   const {
@@ -129,6 +129,11 @@ export default function Home() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasMore, isLoading]);
+  const logout = () => {
+    localStorage.removeItem('token');
+    setCurrentUser(null);
+    addFlashMessage('ログアウトしました。', 'success');
+  };
   if (!currentUser) return <Navigate to="/login" />;
   return (
     <div className="home">
@@ -147,11 +152,8 @@ export default function Home() {
           <SearchBar onSearch={handleSearch} />
         </div>
         <div className="home-header__right">
-          <span className="home-header__user">テストユーザー</span>
-          <button
-            className="icon-btn home-header__logout-btn"
-            onClick={() => {}}
-          >
+          <span className="home-header__user">{currentUser.name}</span>
+          <button className="icon-btn home-header__logout-btn" onClick={logout}>
             <FiLogOut />
           </button>
         </div>
