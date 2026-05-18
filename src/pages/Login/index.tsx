@@ -10,7 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { addFlashMessage } = userUIStore();
-  const {currentUser,setCurrentUser} = useCurrentUserStore();
+  const {currentUser} = useCurrentUserStore();
   const login = async () => {
     if(!email || !password) {
       addFlashMessage('メールアドレスとパスワードを入力してください。', 'error');
@@ -18,9 +18,7 @@ export default function Login() {
     }
     setIsLoading(true);
     try {
-      const {user, token} = await authRepository.signin(email,password);
-      localStorage.setItem('token', token);
-      setCurrentUser(user);
+      await authRepository.signin(email, password);
       addFlashMessage('ログインしました。','success');
     } catch(error) {
       console.log(error);

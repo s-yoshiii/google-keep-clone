@@ -11,7 +11,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const { addFlashMessage } = userUIStore();
   const [isLoading, setIsLoading] = useState(false);
-  const {currentUser,setCurrentUser} = useCurrentUserStore();
+  const {currentUser} = useCurrentUserStore();
   const signup = async() => {
     if (!name || !email || !password) {
       addFlashMessage('全ての項目を入力してください。', 'error')
@@ -23,19 +23,11 @@ export default function Signup() {
     }
     setIsLoading(true);
     try {
-      const {user, token} = await authRepository.signup(name,email,password);
-      setCurrentUser(user);
-      localStorage.setItem('token',token);
+      await authRepository.signup(name, email, password);
       addFlashMessage('アカウントを作成しました', 'success');
-    } catch (e: unknown) {
+    } catch (e) {
       addFlashMessage('アカウント作成に失敗しました。', 'error');
-      if (e && typeof e === 'object' && 'response' in e) {
-        const axiosErr = e as { response: { status: number; data: unknown } };
-        console.error('status:', axiosErr.response.status);
-        console.error('data:', axiosErr.response.data);
-      } else {
-        console.error(e);
-      }
+      console.error(e);
     } finally {
       setIsLoading(false);
     }

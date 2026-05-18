@@ -5,25 +5,15 @@ import Signup from './pages/Signup';
 import Home from './pages/Home';
 import FlashMessage from './components/FlashMessage';
 import { useCurrentUserStore } from './modules/auth/current-user.store';
-import { authRepository } from './modules/auth/auth.repository';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+
 function App() {
-  const { setCurrentUser } = useCurrentUserStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const { initAuth } = useCurrentUserStore();
+
   useEffect(() => {
-    fetchCUrrentUser();
+    initAuth();
   }, []);
-  const fetchCUrrentUser = async () => {
-    try {
-      const user = await authRepository.getCurrentUser();
-      setCurrentUser(user);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  if (isLoading) return null;
+
   return (
     <BrowserRouter>
       <Routes>
