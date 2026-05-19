@@ -15,9 +15,10 @@ import {
 } from '../../modules/notes/note.repository';
 import type { Note } from '../../modules/notes/note.entity';
 import { useDebouncedCallback } from 'use-debounce';
+import { authRepository } from '../../modules/auth/auth.repository';
 
 export default function Home() {
-  const { currentUser, setCurrentUser } = useCurrentUserStore();
+  const { currentUser } = useCurrentUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addFlashMessage } = userUIStore();
   const {
@@ -129,9 +130,8 @@ export default function Home() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasMore, isLoading]);
-  const logout = () => {
-    localStorage.removeItem('token');
-    setCurrentUser(null);
+  const logout = async () => {
+    await authRepository.signout();
     addFlashMessage('ログアウトしました。', 'success');
   };
   if (!currentUser) return <Navigate to="/login" />;
