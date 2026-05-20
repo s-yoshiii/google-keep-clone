@@ -23,12 +23,17 @@ export const noteRepository = {
     if (params.imageFile) {
       imageUrl = await uploadImage(params.imageFile);
     }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const userId = session!.user.id;
     const { data, error } = await supabase
       .from('notes')
       .insert({
         title: params.title,
         content: params.content,
         image_url: imageUrl,
+        user_id: userId,
       })
       .select('*, labels(*)')
       .single();
