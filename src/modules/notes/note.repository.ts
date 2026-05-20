@@ -19,18 +19,30 @@ export interface NotesResponse {
 
 export const noteRepository = {
   async createNote(params: SaveNoteParams): Promise<Note> {
-    const formData = new FormData();
-    if (params.title) formData.append('title', params.title);
-    if (params.content) formData.append('content', params.content);
-    if (params.labelIds && params.labelIds.length > 0)
-      formData.append('labelIds', JSON.stringify(params.labelIds));
-    if (params.imageFile) formData.append('image', params.imageFile);
-    const result = await api.post('/notes', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return new Note(result.data);
+    let imageUrl: string | undefined;
+    if (params.imageFile) {
+      imageUrl = await uploadImage(params.imageFile);
+    }
+    const { data, error } = await supabase
+      .from('notes')
+      .insert({
+        title: params.title,
+        content: params.content,
+        image_url: imageUrl,
+      })
+      .select('*, labels(*)')
+      .single();
+    if (error) throw error;
+
+    if (params.labelIds.length > 0) {
+      await supabase.from('note_labels').insert(
+        params.labelIds.map((labelId) => ({
+          note_id: data.id,
+          label_id: labelId,
+        }))
+      );
+    }
+    return new Note(toNote(data));
   },
   async getNotes(
     page: number = 1,
@@ -57,23 +69,48 @@ export const noteRepository = {
     };
   },
   async updateNote(id: string, params: SaveNoteParams): Promise<Note> {
-    const formData = new FormData();
-    if (params.title) formData.append('title', params.title);
-    if (params.content) formData.append('content', params.content);
-    if (params.labelIds && params.labelIds.length > 0)
-      formData.append('labelIds', JSON.stringify(params.labelIds));
-    if (params.imageFile) formData.append('image', params.imageFile);
-    const result = await api.put(`/notes/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return new Note(result.data);
+    let imageUrl: string | undefined;
+    if (params.imageFile) {
+      imageUrl = await uploadImage(params.imageFile);
+    }
+    const { data, error } = await supabase
+      .from('notes')
+      .update({
+        title: params.title,
+        content: params.content,
+        image_url: imageUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select('*, labels(*)')
+      .single();
+    if (error) throw error;
+    await supabase.from('note_labels').delete().eq('note_id', id);
+    if (params.labelIds.length > 0) {
+      await supabase.from('note_labels').insert(
+        params.labelIds.map((labelId) => ({
+          note_id: data.id,
+          label_id: labelId,
+        }))
+      );
+    }
+    return new Note(toNote(data));
   },
   async deleteNote(id: string): Promise<void> {
-    await api.delete(`/notes/${id}`);
+    const { error } = await supabase.from('notes').delete().eq('id', id);
+    if (error) throw error;
   },
 };
+
+async function uploadImage(file: File): Promise<string> {
+  const filename = `${Date.now()}_${file.name}`;
+  const { error } = await supabase.storage
+    .from('images')
+    .upload(filename, file);
+  if (error) throw error;
+  const { data } = supabase.storage.from('images').getPublicUrl(filename);
+  return data.publicUrl;
+}
 
 function toLabel(raw: Record<string, unknown>): Label {
   return {
