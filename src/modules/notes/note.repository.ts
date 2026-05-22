@@ -78,27 +78,34 @@ export const noteRepository = {
     if (params.imageFile) {
       imageUrl = await uploadImage(params.imageFile);
     }
-    const { data, error } = await supabase
+
+    // Step1: メモを更新（image_url は新画像があるときだけ上書き）
+    const { error } = await supabase
       .from('notes')
       .update({
         title: params.title,
         content: params.content,
-        image_url: imageUrl,
+        ...(imageUrl !== undefined && { image_url: imageUrl }),
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .select('*, labels(*)')
-      .single();
+      .eq('id', id);
     if (error) throw error;
+
+    // Step2: ラベルを全削除→再登録
     await supabase.from('note_labels').delete().eq('note_id', id);
     if (params.labelIds.length > 0) {
       await supabase.from('note_labels').insert(
-        params.labelIds.map((labelId) => ({
-          note_id: data.id,
-          label_id: labelId,
-        }))
+        params.labelIds.map((labelId) => ({ note_id: id, label_id: labelId }))
       );
     }
+
+    // Step3: ラベル更新後に最新データを取得して返す
+    const { data, error: fetchError } = await supabase
+      .from('notes')
+      .select('*, labels(*)')
+      .eq('id', id)
+      .single();
+    if (fetchError) throw fetchError;
     return new Note(toNote(data));
   },
   async deleteNote(id: string): Promise<void> {
