@@ -2,9 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Context
+
+- This is a Google Keep clone built in TypeScript, used as a learning project. Prioritize teaching explanations alongside code changes.
+
 ## Workflow
 
 After making any code changes, always run a full build/type check (`yarn build` or equivalent) before committing to catch errors like missing imports, unused variables, or missing build steps.
+
+- After each significant change: check for errors/bugs, then commit and push automatically.
+- After completing a course session or feature, create/update study notes in the learning notes directory documenting what was built and key concepts learned.
+
+## Debugging
+
+- Before assuming a bug is in the code, check for environmental/data causes first (e.g., 400 errors may be duplicate data, missing files may be .gitignore exclusions).
 
 ## Commands
 
