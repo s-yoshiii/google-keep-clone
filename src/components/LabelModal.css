@@ -14,7 +14,7 @@
 
 .label-modal {
   background-color: white;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: var(--shadow-lg);
   max-width: 400px;
   width: 100%;
@@ -66,8 +66,9 @@
 }
 
 .label-modal__color-option--selected {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--text-primary);
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-dark);
+  transform: scale(1.12);
 }
 
 .label-modal__footer {

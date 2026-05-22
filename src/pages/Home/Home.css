@@ -14,8 +14,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 24px;
   box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .home-header__left {
@@ -65,10 +68,18 @@
   display: flex;
   align-items: center;
   background-color: var(--hover-bg);
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 24px;
+  padding: 8px 20px;
   max-width: 600px;
   flex: 1;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+}
+
+.search-bar:focus-within {
+  background-color: white;
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .search-bar__icon {
@@ -240,9 +251,9 @@
 .note-card {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 16px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -251,7 +262,8 @@
 
 .note-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  border-color: transparent;
 }
 
 .note-card__image-container {
@@ -475,7 +487,7 @@
 }
 
 .note-modal__label-tag--selected {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 2.5px white, 0 0 0 4px var(--primary-dark);
 }
 
 .note-modal__label-check {

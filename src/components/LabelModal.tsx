@@ -3,12 +3,14 @@ import './LabelModal.css';
 import { useState } from 'react';
 
 const LABEL_COLORS = [
-  { name: '赤', value: '#f44336' },
-  { name: '青', value: '#2196f3' },
-  { name: '緑', value: '#4caf50' },
-  { name: '黄', value: '#ffc107' },
-  { name: '紫', value: '#9c27b0' },
-  { name: '灰', value: '#9e9e9e' },
+  { name: 'ピンク', value: '#f9b3cc' },
+  { name: 'さくら', value: '#f7cdd8' },
+  { name: 'ミント', value: '#b2dfb2' },
+  { name: 'セージ', value: '#c8e6c9' },
+  { name: 'スカイ', value: '#b3d9f5' },
+  { name: 'ラベンダー', value: '#d4bff0' },
+  { name: 'ピーチ', value: '#ffd5b8' },
+  { name: 'レモン', value: '#fff0b3' },
 ];
 
 interface LabelModalProps {
