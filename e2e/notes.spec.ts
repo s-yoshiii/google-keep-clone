@@ -58,3 +58,21 @@ test('メモを削除できる', async ({ page }) => {
   // ③ メモが消えることを確認
   await expect(page.getByText(title)).not.toBeVisible();
 });
+
+test('メモを編集できる', async ({ page }) => {
+  const title = `編集テスト_${Date.now()}`;
+  const newTitle = `編集済み_${Date.now()}`;
+  // ① メモを作成
+  await page.click('button:has-text("新しいメモ")');
+  await page.fill('input[placeholder="タイトル"]', title);
+  await page.fill('textarea', 'これはテストです');
+  await page.click('button:has-text("保存")');
+  // ② カードをクリックしてモーダルを開く
+  await page.locator('.note-card').first().hover();
+  await page.locator('.note-card').first().click();
+  // ③ タイトルを書き換えて保存
+  await page.fill('input[placeholder="タイトル"]', newTitle);
+  await page.click('button:has-text("保存")');
+  // ④ 更新後のタイトルが表示されることを確認
+  await expect(page.getByText(newTitle)).toBeVisible();
+});
