@@ -76,3 +76,19 @@ test('メモを編集できる', async ({ page }) => {
   // ④ 更新後のタイトルが表示されることを確認
   await expect(page.getByText(newTitle)).toBeVisible();
 });
+
+test('検索でメモを絞り込める', async ({ page }) => {
+  const title = `検索テスト_${Date.now()}`;
+
+  // ① メモを作成
+  await page.click('button:has-text("新しいメモ")');
+  await page.fill('input[placeholder="タイトル"]', title);
+  await page.fill('textarea', 'これはテストです');
+  await page.click('button:has-text("保存")');
+  // ② 検索バーに title を入力
+  await page.fill('.search-bar__input', title);
+  // ③ waitForTimeout(600) で待機
+  await page.waitForTimeout(600);
+  // ④ そのメモが表示されることを確認
+  await expect(page.getByText(title)).toBeVisible();
+});
